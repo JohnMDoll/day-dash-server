@@ -3,7 +3,7 @@
 
 [MESSAGES CONTROL]
   disable=broad-except,no-self-use,abstract-method,redefined-builtin
-  ;  imported-auth-user, ;removed from above to silence pylint errors
+  ; imported-auth-user, ;removed from above to silence pylint errors
 
 [MASTER]
   disable=C0114,
