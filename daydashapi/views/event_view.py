@@ -42,6 +42,21 @@ class EventView(ViewSet):
         except IntegrityError:
             return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
         return Response(serialized.data, status=status.HTTP_201_CREATED)
+    
+    def update(self, request, pk):
+        """Handle PUT requests for a game
+        Returns:
+            Response -- Empty body with 204 status code
+        """
+        event = Event.objects.get(pk=pk)
+        event.name = request.data['name']
+        event.description = request.data['description']
+        event.location = request.data['location']
+        event.start_datetime = request.data['startDateTime']
+        event.end_datetime = request.data['endDateTime']
+        event.save()
+
+        return Response(None, status=status.HTTP_204_NO_CONTENT)
 
     def destroy(self, request, pk=None):
         """Handle PUT requests for service tickets
