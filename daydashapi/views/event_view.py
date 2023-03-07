@@ -14,6 +14,7 @@ class EventView(ViewSet):
         Returns:
             Response -- JSON serialized list of events
         """
+        # Add additional serialization to group events by date
         try:
             # need to also return friender's events somehow
             user = DashUser.objects.get(user=request.auth.user)
