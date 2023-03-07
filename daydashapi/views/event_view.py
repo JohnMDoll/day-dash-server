@@ -49,30 +49,31 @@ class EventView(ViewSet):
             Response -- Empty body with 204 status code
         """
         event = Event.objects.get(pk=pk)
-        event.name = request.data['name']
-        event.description = request.data['description']
-        event.location = request.data['location']
-        event.start_datetime = request.data['startDateTime']
-        event.end_datetime = request.data['endDateTime']
-        event.save()
+        if event.user == DashUser.objects.get(request.auth.user):
+            event.name = request.data['name']
+            event.description = request.data['description']
+            event.location = request.data['location']
+            event.start_datetime = request.data['startDateTime']
+            event.end_datetime = request.data['endDateTime']
+            event.save()
+        else:
+            return Response(None, status=status.HTTP_401_UNAUTHORIZED)
 
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
     def destroy(self, request, pk=None):
-        """Handle PUT requests for service tickets
+        """Handle DELETE requests for events
 
         Returns:
             Response: None with 204 status code
         """
         try:
-            user = request.auth.user
-            if "park_id" in request.data:
-                event = ParkEvent.objects.get(park_id=request.data['park_id'], user=user)
-            else:
-                return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
-            event.delete()
+            user = DashUser.objects.get(user=request.auth.user)
+            Event.objects.get(pk=pk, user=user).delete()
+        
         except (IntegrityError, ObjectDoesNotExist):
             return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
+        
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 class EventSerializer(serializers.ModelSerializer):
