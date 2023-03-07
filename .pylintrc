@@ -1,0 +1,10 @@
+[FORMAT] 
+  good-names=i,j,ex,pk
+
+[MESSAGES CONTROL]
+  disable=broad-except,missing-class-docstring,no-self-use,abstract-method
+  ;  imported-auth-user, ;removed from above to silence pylint errors
+
+[MASTER]
+  disable=C0114,
+
