@@ -1,11 +1,8 @@
 {
+    "python.formatting.autopep8Path": "/home/jdoll/.local/share/virtualenvs/my-day-dash-API-175C2vwS/bin/autopep8",
     "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true,
-    "cSpell.words": [
-        "corsheaders",
-        "daydash",
-        "daydashapi",
-        "friendee",
-        "friender"
-    ]
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportGeneralTypeIssues": "none"
+    },
+    "python.linting.enabled": true
 }
