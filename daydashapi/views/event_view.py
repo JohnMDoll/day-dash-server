@@ -1,6 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
-from django.contrib.auth.models import User
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
@@ -15,14 +14,11 @@ class EventView(ViewSet):
         Returns:
             Response -- JSON serialized list of events
         """
-
-        # need some check for user and some empty return if none?
         try:
-            user = request.auth.user
-            if "park_id" in request.query_params:
-                event = ParkEvent.objects.get(park_id=request.query_params['park_id'], user=user)
-                serialized = ParkEventSerializer(event)
-
+            # need to also return friender's events somehow
+            user = DashUser.objects.get(user=request.auth.user)
+            events = Event.objects.filter(user=user)
+            serialized = EventSerializer(events, many=True)
         except ObjectDoesNotExist:
             return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
         return Response(serialized.data, status=status.HTTP_200_OK)
