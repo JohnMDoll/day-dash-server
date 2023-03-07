@@ -69,7 +69,6 @@ def register(request):
         # Return the token to the client
         # this is where we update what gets sent back to the client for localStorage
         data = {
-            'id': new_dash_user.id,
             'firstName': new_user.first_name,
             'zipcode': new_dash_user.zipcode,
             'token': token.key
