@@ -2,8 +2,7 @@
   good-names=i,j,ex,pk
 
 [MESSAGES CONTROL]
-  disable=broad-except,missing-class-docstring,no-self-use,abstract-method
-  ;  imported-auth-user, ;removed from above to silence pylint errors
+  disable=broad-except,no-self-use,abstract-method,redefined-builtin,imported-auth-user
 
 [MASTER]
   disable=C0114,

@@ -14,8 +14,16 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+from rest_framework import routers
+from daydashapi.views import login, register, EventView
+
+router = routers.DefaultRouter(trailing_slash=False)
+router.register(r'events', EventView, 'event')
 
 urlpatterns = [
+    path('', include(router.urls)),
+    path('register', register),
+    path('login', login),
     path('admin/', admin.site.urls),
 ]
