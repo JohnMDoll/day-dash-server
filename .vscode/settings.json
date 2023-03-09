@@ -6,6 +6,8 @@
     },
     "python.linting.enabled": true,
     "cSpell.words": [
+        "friendee",
+        "friender",
         "viewsets"
     ]
 }
