@@ -50,7 +50,7 @@ class EventView(ViewSet):
             Response -- Empty body with 204 status code
         """
         event = Event.objects.get(pk=pk)
-        if event.user == DashUser.objects.get(request.auth.user):
+        if event.user == DashUser.objects.get(user=request.auth.user):
             event.name = request.data['name']
             event.description = request.data['description']
             event.location = request.data['location']
@@ -78,9 +78,9 @@ class EventView(ViewSet):
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
 class EventSerializer(serializers.ModelSerializer):
-    """JSON serializer for event photos"""
-    startDateTime = serializers.CharField(source='start_datetime')
-    endDateTime = serializers.CharField(source='end_datetime')
+    """JSON serializer for events"""
+    startDateTime = serializers.DateTimeField(source='start_datetime', format='%Y-%m-%dT%H:%M')
+    endDateTime = serializers.DateTimeField(source='end_datetime', format='%Y-%m-%dT%H:%M')
 
     class Meta:
         model = Event
