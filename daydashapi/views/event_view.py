@@ -18,7 +18,7 @@ class EventView(ViewSet):
         try:
             # need to also return friender's events somehow
             user = DashUser.objects.get(user=request.auth.user)
-            events = Event.objects.filter(user=user)
+            events = Event.objects.filter(user=user).order_by('start_datetime')
             serialized = EventSerializer(events, many=True)
         except ObjectDoesNotExist:
             return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
