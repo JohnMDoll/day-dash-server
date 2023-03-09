@@ -4,8 +4,13 @@
     "python.analysis.diagnosticSeverityOverrides": {
         "reportGeneralTypeIssues": "none"
     },
+    "python.linting.pylintArgs": [
+    "--django-settings-module=<mainapp>.settings"
+    ],
     "python.linting.enabled": true,
     "cSpell.words": [
+        "corsheaders",
+        "daydash",
         "friendee",
         "friender",
         "viewsets"
