@@ -1,9 +1,12 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone as django_tz
 from django.db.utils import IntegrityError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
 from daydashapi.models import Event, DashUser
+from pyzipcode import ZipCodeDatabase
+from datetime import timedelta
 
 class EventView(ViewSet):
     """DayDash API events handling"""
@@ -18,7 +21,14 @@ class EventView(ViewSet):
         try:
             # need to also return friender's events somehow
             user = DashUser.objects.get(user=request.auth.user)
-            events = Event.objects.filter(user=user).order_by('start_datetime')
+            #declare instance of sipcode db
+            zcdb = ZipCodeDatabase()
+            # get a ZipCode obj from user's zipcode
+            zipcode = zcdb[user.zipcode]
+            #pull the shift from UTC from zipcode obj's timezone prop
+            time_shift = zipcode.timezone
+            # filtering for events occurring today or in the future shifting "today" by the user's time shift
+            events = Event.objects.filter(user=user, start_datetime__gte=(django_tz.now()+timedelta(hours=time_shift)).date()).order_by('start_datetime')
             serialized = EventSerializer(events, many=True)
         except ObjectDoesNotExist:
             return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
@@ -28,6 +38,7 @@ class EventView(ViewSet):
         """Handles POST requests for events
         Returns:
             Response: JSON serialized representation of newly created event"""
+                
         try:
             user = DashUser.objects.get(user=request.auth.user)
             event = Event.objects.create(
@@ -54,8 +65,8 @@ class EventView(ViewSet):
             event.name = request.data['name']
             event.description = request.data['description']
             event.location = request.data['location']
-            event.start_datetime = request.data['startDateTime']
-            event.end_datetime = request.data['endDateTime']
+            event.start_datetime = request.data['startDateTime'], timezone=timezone,
+            event.end_datetime = request.data['endDateTime'], timezone=timezone,
             event.save()
         else:
             return Response(None, status=status.HTTP_401_UNAUTHORIZED)
