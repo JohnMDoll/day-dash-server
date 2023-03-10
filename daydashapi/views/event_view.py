@@ -19,17 +19,25 @@ class EventView(ViewSet):
         """
         # Add additional serialization to group events by date
         try:
-            # need to also return friender's events somehow
-            user = DashUser.objects.get(user=request.auth.user)
-            #declare instance of sipcode db
-            zcdb = ZipCodeDatabase()
-            # get a ZipCode obj from user's zipcode
-            zipcode = zcdb[user.zipcode]
-            #pull the shift from UTC from zipcode obj's timezone prop
-            time_shift = zipcode.timezone
-            # filtering for events occurring today or in the future shifting "today" by the user's time shift
-            events = Event.objects.filter(user=user, start_datetime__gte=(django_tz.now()+timedelta(hours=time_shift)).date()).order_by('start_datetime')
-            serialized = EventSerializer(events, many=True)
+
+            if "friender" in request.query_params:
+                user = DashUser.objects.get(user_id=request.query_params['friender'])
+                #declare instance of zipcode db
+                zcdb = ZipCodeDatabase()
+                # get a ZipCode obj from user's zipcode
+                zipcode = zcdb[user.zipcode]
+                #pull the shift from UTC from zipcode obj's timezone prop
+                time_shift = zipcode.timezone
+                # filtering for events occurring today or in the future shifting "today" by the user's time shift
+                events = Event.objects.filter(user=user, start_datetime__gte=(django_tz.now()+timedelta(hours=time_shift)).date()).order_by('start_datetime')
+                serialized = EventSerializer(events, many=True)
+            else:
+                user = DashUser.objects.get(user=request.auth.user)
+                zcdb = ZipCodeDatabase()
+                zipcode = zcdb[user.zipcode]
+                time_shift = zipcode.timezone
+                events = Event.objects.filter(user=user, start_datetime__gte=(django_tz.now()+timedelta(hours=time_shift)).date()).order_by('start_datetime')
+                serialized = EventSerializer(events, many=True)
         except ObjectDoesNotExist:
             return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
         return Response(serialized.data, status=status.HTTP_200_OK)
