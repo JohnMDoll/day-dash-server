@@ -49,6 +49,8 @@ class EventView(ViewSet):
                 end_datetime = request.data['endDateTime'],
                 user = user
             )
+            event.tags.set(request.data['tags'])
+            event.save()
             serialized = EventSerializer(event)
 
         except IntegrityError:
@@ -63,8 +65,6 @@ class EventView(ViewSet):
         # TODO: add exception handling
         event = Event.objects.get(pk=pk)
         user = DashUser.objects.get(user=request.auth.user)
-        # event_tags = set(request.data['tags'])
-
 
         if event.user == user:
             event.name = request.data['name']
