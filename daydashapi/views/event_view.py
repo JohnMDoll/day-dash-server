@@ -60,13 +60,19 @@ class EventView(ViewSet):
         Returns:
             Response -- Empty body with 204 status code
         """
+        # TODO: add exception handling
         event = Event.objects.get(pk=pk)
-        if event.user == DashUser.objects.get(user=request.auth.user):
+        user = DashUser.objects.get(user=request.auth.user)
+        # event_tags = set(request.data['tags'])
+
+
+        if event.user == user:
             event.name = request.data['name']
             event.description = request.data['description']
             event.location = request.data['location']
-            event.start_datetime = request.data['startDateTime'], timezone=timezone,
-            event.end_datetime = request.data['endDateTime'], timezone=timezone,
+            event.start_datetime = request.data['startDateTime']
+            event.end_datetime = request.data['endDateTime']
+            event.tags.set(request.data['tags'])
             event.save()
         else:
             return Response(None, status=status.HTTP_401_UNAUTHORIZED)
@@ -95,4 +101,4 @@ class EventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Event
-        fields = ( 'id', 'name', 'description', 'location', 'startDateTime', 'endDateTime')
+        fields = ( 'id', 'name', 'description', 'location', 'startDateTime', 'endDateTime', 'tags')

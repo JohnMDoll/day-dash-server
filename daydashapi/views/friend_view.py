@@ -15,26 +15,34 @@ class FriendView(ViewSet):
         Returns:
             Response -- JSON serialized list of friends
         """
-        # Add additional serialization to group friends by date
-        try:
-            user = DashUser.objects.get(user=request.auth.user)
-            friends = Friendship.objects.filter(friender=user)
-            serialized = FriendshipSerializer(friends, many=True)
-        except ObjectDoesNotExist:
-            return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
+        # TODO: add friend search function by full_name and email
+        # TODO: add function to return user frienders with impending events
+
+        user = DashUser.objects.get(user=request.auth.user)
+
+        if "frienders" in request.query_params:
+            friends = Friendship.objects.filter(friendee=user)
+            serialized = FrienderFriendshipSerializer(friends, many=True)
+        else:
+            try:
+                friends = Friendship.objects.filter(friender=user)
+                serialized = FriendeeFriendshipSerializer(friends, many=True)
+            except ObjectDoesNotExist:
+                return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
+
         return Response(serialized.data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """Handles POST requests for friends
         Returns:
             Response: JSON serialized representation of newly created friend"""
-
+        # TODO: prevent duplicating friendships
         try:
             friendship = Friendship.objects.create(
                 friender=DashUser.objects.get(user=request.auth.user),
                 friendee=DashUser.objects.get(user__email=request.data['email'])
             )
-            serialized = FriendshipSerializer(friendship)
+            serialized = FriendeeFriendshipSerializer(friendship)
 
         except ObjectDoesNotExist:
             return Response({'message': "No matching user"}, status=status.HTTP_404_NOT_FOUND)
@@ -71,7 +79,6 @@ class FriendView(ViewSet):
 
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
-
 class FriendSerializer(serializers.ModelSerializer):
     """JSON serializer for friends"""
     name = serializers.CharField(source='full_name')
@@ -80,8 +87,16 @@ class FriendSerializer(serializers.ModelSerializer):
         model = DashUser
         fields = ('id', 'name')
 
+class FrienderFriendshipSerializer(serializers.ModelSerializer):
+    """JSON serializer for friends"""
+    friend = FriendSerializer(source='friender')
+    # friend = serializers.CharField(source='friendee')
 
-class FriendshipSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Friendship
+        fields = ('id', 'friend')
+
+class FriendeeFriendshipSerializer(serializers.ModelSerializer):
     """JSON serializer for friends"""
     friend = FriendSerializer(source='friendee')
     # friend = serializers.CharField(source='friendee')

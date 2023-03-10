@@ -49,9 +49,9 @@ class TagView(ViewSet):
         """
         try:
             user = DashUser.objects.get(user=request.auth.user)
-            tag = Tag.objects.get(user=user, pk=pk)
-            tag = request.data['tag']
-            tag.save()
+            this_tag = Tag.objects.get(user=user, pk=pk)
+            this_tag.tag = request.data['tag']
+            this_tag.save()
         except ObjectDoesNotExist:
             return Response(None, status=status.HTTP_401_UNAUTHORIZED)
 
