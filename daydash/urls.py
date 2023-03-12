@@ -16,11 +16,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
-from daydashapi.views import login, register, EventView, FriendView
+from daydashapi.views import login, register, EventView, FriendView, TagView
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'events', EventView, 'event')
 router.register(r'friends', FriendView, 'friend')
+router.register(r'tags', TagView, 'tag')
 
 urlpatterns = [
     path('', include(router.urls)),

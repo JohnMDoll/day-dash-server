@@ -1,13 +1,35 @@
+from django.db.models import Q
+from django.utils import timezone as django_tz
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.utils import IntegrityError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
-from daydashapi.models import Friendship, DashUser
+from daydashapi.models import Friendship, DashUser, Event
+from pyzipcode import ZipCodeDatabase
+from datetime import timedelta
 
 
 class FriendView(ViewSet):
     """DayDash API friends handling"""
+
+    def retrieve(self, request, pk):
+        """Handle GET requests to get friend
+
+        Returns:
+            Response -- JSON serialized friend object
+        """
+        try:
+            user = DashUser.objects.get(user=request.auth.user)
+            friend = DashUser.objects.get(user_id=pk)
+            friends = Friendship.objects.get(friender=friend, friendee=user)
+
+            serialized = FriendSerializer(friend)
+
+        except ObjectDoesNotExist:
+            return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(serialized.data, status=status.HTTP_200_OK)
 
     def list(self, request):
         """Handle GET requests to get friends
@@ -15,26 +37,46 @@ class FriendView(ViewSet):
         Returns:
             Response -- JSON serialized list of friends
         """
-        # Add additional serialization to group friends by date
+        # TODO: add friend search function by full_name and email
+        # TODO: add function to return user frienders with impending events
+
+        user = DashUser.objects.get(user=request.auth.user)
         try:
-            user = DashUser.objects.get(user=request.auth.user)
-            friends = Friendship.objects.filter(friender=user)
-            serialized = FriendshipSerializer(friends, many=True)
+            if "frienders" in request.query_params:
+                friends = Friendship.objects.filter(friendee=user)
+                for friend in friends:
+
+                    zcdb = ZipCodeDatabase()
+                    zipcode = zcdb[friend.friender.zipcode]
+                    time_shift = zipcode.timezone
+
+                    friend.events = Event.objects.filter(user=friend.friender, start_datetime__gte=(
+                        django_tz.now()+timedelta(hours=time_shift)).date()).order_by('start_datetime')
+
+                serialized = FrienderFriendshipSerializer(
+                    friends, many=True, context={'request': request})
+
+            else:
+                friends = Friendship.objects.filter(friender=user)
+                serialized = FriendeeFriendshipSerializer(friends, many=True)
+
         except ObjectDoesNotExist:
             return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
+
         return Response(serialized.data, status=status.HTTP_200_OK)
 
     def create(self, request):
         """Handles POST requests for friends
         Returns:
             Response: JSON serialized representation of newly created friend"""
-
+        # TODO: prevent duplicating friendships
         try:
             friendship = Friendship.objects.create(
                 friender=DashUser.objects.get(user=request.auth.user),
-                friendee=DashUser.objects.get(user__email=request.data['email'])
+                friendee=DashUser.objects.get(
+                    user__email=request.data['email'])
             )
-            serialized = FriendshipSerializer(friendship)
+            serialized = FriendeeFriendshipSerializer(friendship)
 
         except ObjectDoesNotExist:
             return Response({'message': "No matching user"}, status=status.HTTP_404_NOT_FOUND)
@@ -81,10 +123,31 @@ class FriendSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
-class FriendshipSerializer(serializers.ModelSerializer):
+class FriendEventSerializer(serializers.ModelSerializer):
+    """JSON serializer for events"""
+    startDateTime = serializers.DateTimeField(
+        source='start_datetime', format='%Y-%m-%dT%H:%M')
+    endDateTime = serializers.DateTimeField(
+        source='end_datetime', format='%Y-%m-%dT%H:%M')
+
+    class Meta:
+        model = Event
+        fields = ('id', 'name', 'startDateTime', 'endDateTime')
+
+
+class FrienderFriendshipSerializer(serializers.ModelSerializer):
+    """JSON serializer for friends"""
+    friend = FriendSerializer(source='friender')
+    events = FriendEventSerializer(many=True)
+
+    class Meta:
+        model = Friendship
+        fields = ('id', 'friend', 'events')
+
+
+class FriendeeFriendshipSerializer(serializers.ModelSerializer):
     """JSON serializer for friends"""
     friend = FriendSerializer(source='friendee')
-    # friend = serializers.CharField(source='friendee')
 
     class Meta:
         model = Friendship
