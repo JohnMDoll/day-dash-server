@@ -69,7 +69,7 @@ class FriendView(ViewSet):
         """Handles POST requests for friends
         Returns:
             Response: JSON serialized representation of newly created friend"""
-        # TODO: prevent duplicating friendships
+        # TODO: prevent duplicating friendships and self-friending
         try:
             friendship = Friendship.objects.create(
                 friender=DashUser.objects.get(user=request.auth.user),

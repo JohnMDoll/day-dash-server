@@ -4,7 +4,7 @@ from django.db.utils import IntegrityError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
-from daydashapi.models import Event, DashUser
+from daydashapi.models import Event, DashUser, EventComments
 from pyzipcode import ZipCodeDatabase
 from datetime import timedelta
 
@@ -30,7 +30,7 @@ class EventView(ViewSet):
                 time_shift = zipcode.timezone
                 # filtering for events occurring today or in the future shifting "today" by the user's time shift
                 events = Event.objects.filter(user=user, start_datetime__gte=(django_tz.now()+timedelta(hours=time_shift)).date()).order_by('start_datetime')
-                serialized = EventSerializer(events, many=True)
+                serialized = EventSerializer(events, many=True, context=request)
             else:
                 user = DashUser.objects.get(user=request.auth.user)
                 zcdb = ZipCodeDatabase()
@@ -102,11 +102,35 @@ class EventView(ViewSet):
         
         return Response(None, status=status.HTTP_204_NO_CONTENT)
 
+class CommenterSerializer(serializers.ModelSerializer):
+    """JSON serializer for commenters"""
+    name = serializers.CharField(source='full_name')
+
+    class Meta:
+        model = DashUser
+        fields = ('id', 'name')
+
+class CommentSerializer(serializers.ModelSerializer):
+    '''JSON serializer for comments attached to events'''
+    commenter = CommenterSerializer()
+
+    class Meta:
+        model = EventComments
+        fields = ( 'id', 'comment', 'commenter')
+
 class EventSerializer(serializers.ModelSerializer):
     """JSON serializer for events"""
     startDateTime = serializers.DateTimeField(source='start_datetime', format='%Y-%m-%dT%H:%M')
     endDateTime = serializers.DateTimeField(source='end_datetime', format='%Y-%m-%dT%H:%M')
+    comments = serializers.SerializerMethodField()
+
+    def get_comments(self, obj):
+        # Get the comments associated with the current event
+        # TODO: after friendTags implementation, add layer of filtering to return only user's comments or comments made by commenters that share tags with each other and the event
+        comments = EventComments.objects.filter(event=obj)
+        serializer = CommentSerializer(comments, many=True, context=self.context)
+        return serializer.data
 
     class Meta:
         model = Event
-        fields = ( 'id', 'name', 'description', 'location', 'startDateTime', 'endDateTime', 'tags')
+        fields = ( 'id', 'name', 'description', 'location', 'startDateTime', 'endDateTime', 'tags', 'comments')

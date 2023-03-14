@@ -2,16 +2,11 @@ import os
 import requests
 import json
 from dotenv import load_dotenv
-from django.db.models import Q
-from django.utils import timezone as django_tz
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.utils import IntegrityError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
-from rest_framework import serializers, status
-from daydashapi.models import Friendship, DashUser, Event
-from pyzipcode import ZipCodeDatabase
-from datetime import timedelta
+from rest_framework import status
+from daydashapi.models import DashUser
 
 
 class WeatherView(ViewSet):
