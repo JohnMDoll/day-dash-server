@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone as django_tz
 from django.db.utils import IntegrityError
@@ -37,7 +38,7 @@ class EventView(ViewSet):
                 zipcode = zcdb[user.zipcode]
                 time_shift = zipcode.timezone
                 events = Event.objects.filter(user=user, start_datetime__gte=(django_tz.now()+timedelta(hours=time_shift)).date()).order_by('start_datetime')
-                serialized = EventSerializer(events, many=True)
+                serialized = EventSerializer(events, many=True, context=request)
         except ObjectDoesNotExist:
             return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
         return Response(serialized.data, status=status.HTTP_200_OK)
@@ -127,7 +128,8 @@ class EventSerializer(serializers.ModelSerializer):
     def get_comments(self, obj):
         # Get the comments associated with the current event
         # TODO: after friendTags implementation, add layer of filtering to return only user's comments or comments made by commenters that share tags with each other and the event
-        comments = EventComments.objects.filter(event=obj)
+        user = DashUser.objects.get(user=self.context.auth.user)
+        comments = EventComments.objects.filter(Q(event=obj), Q(commenter=user) | Q(event__user=user))
         serializer = CommentSerializer(comments, many=True, context=self.context)
         return serializer.data
 
