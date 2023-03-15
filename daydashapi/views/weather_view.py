@@ -37,7 +37,7 @@ class WeatherView(ViewSet):
             today = {
                 'high': data['forecast']['forecastday'][0]['day']['maxtemp_f'],
                 'low': data['forecast']['forecastday'][0]['day']['mintemp_f'],
-                'rain': data['forecast']['forecastday'][0]['day']['totalprecip_in'],
+                'rain': data['forecast']['forecastday'][0]['day']['daily_chance_of_rain'],
                 'condition': data['forecast']['forecastday'][0]['day']['condition']['text'],
                 'sunrise': data['forecast']['forecastday'][0]['astro']['sunrise'],
                 'sunset': data['forecast']['forecastday'][0]['astro']['sunset'],
@@ -46,7 +46,7 @@ class WeatherView(ViewSet):
             tomorrow = {
                 'high': data['forecast']['forecastday'][1]['day']['maxtemp_f'],
                 'low': data['forecast']['forecastday'][1]['day']['mintemp_f'],
-                'rain': data['forecast']['forecastday'][1]['day']['totalprecip_in'],
+                'rain': data['forecast']['forecastday'][1]['day']['daily_chance_of_rain'],
                 'condition': data['forecast']['forecastday'][1]['day']['condition']['text'],
                 'sunrise': data['forecast']['forecastday'][1]['astro']['sunrise'],
                 'sunset': data['forecast']['forecastday'][1]['astro']['sunset'],
@@ -90,7 +90,7 @@ class WeatherView(ViewSet):
         today = {
             'high': data['forecast']['forecastday'][0]['day']['maxtemp_f'],
             'low': data['forecast']['forecastday'][0]['day']['mintemp_f'],
-            'rain': data['forecast']['forecastday'][0]['day']['totalprecip_in'],
+            'rain': data['forecast']['forecastday'][0]['day']['daily_chance_of_rain'],
             'condition': data['forecast']['forecastday'][0]['day']['condition']['text'],
             'sunrise': data['forecast']['forecastday'][0]['astro']['sunrise'],
             'sunset': data['forecast']['forecastday'][0]['astro']['sunset'],
@@ -99,7 +99,7 @@ class WeatherView(ViewSet):
         tomorrow = {
             'high': data['forecast']['forecastday'][1]['day']['maxtemp_f'],
             'low': data['forecast']['forecastday'][1]['day']['mintemp_f'],
-            'rain': data['forecast']['forecastday'][1]['day']['totalprecip_in'],
+            'rain': data['forecast']['forecastday'][1]['day']['daily_chance_of_rain'],
             'condition': data['forecast']['forecastday'][1]['day']['condition']['text'],
             'sunrise': data['forecast']['forecastday'][1]['astro']['sunrise'],
             'sunset': data['forecast']['forecastday'][1]['astro']['sunset'],
