@@ -69,14 +69,19 @@ class FriendView(ViewSet):
         """Handles POST requests for friends
         Returns:
             Response: JSON serialized representation of newly created friend"""
-        # TODO: prevent duplicating friendships
         try:
-            friendship = Friendship.objects.create(
+            if request.auth.user.email == request.data['email']:
+                return Response({"message": "Don't try to friend yourself."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            friendship = Friendship.objects.get_or_create(
                 friender=DashUser.objects.get(user=request.auth.user),
                 friendee=DashUser.objects.get(
                     user__email=request.data['email'])
             )
-            serialized = FriendeeFriendshipSerializer(friendship)
+            if friendship[1] == False:
+                return Response({"message": "You already friended this user."}, status=status.HTTP_400_BAD_REQUEST)
+
+            serialized = FriendeeFriendshipSerializer(friendship[0])
 
         except ObjectDoesNotExist:
             return Response({'message': "No matching user"}, status=status.HTTP_404_NOT_FOUND)
