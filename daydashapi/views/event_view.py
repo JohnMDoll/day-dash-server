@@ -60,7 +60,7 @@ class EventView(ViewSet):
             )
             event.tags.set(request.data['tags'])
             event.save()
-            serialized = EventSerializer(event)
+            serialized = EventSerializer(event, context=request)
 
         except IntegrityError:
             return Response({'valid': False}, status=status.HTTP_404_NOT_FOUND)
