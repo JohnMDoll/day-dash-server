@@ -15,6 +15,7 @@ dj-database-url = "*"
 psycopg2-binary = "*"
 pyzipcode = "*"
 requests = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
