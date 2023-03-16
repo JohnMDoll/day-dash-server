@@ -72,7 +72,7 @@ def register(request):
         data = {
             'valid': True,
             'firstName': new_user.first_name,
-            'id': new_dash_user['id'],
+            'id': new_dash_user.id,
             'zipcode': new_dash_user.zipcode,
             'token': token.key
             }
