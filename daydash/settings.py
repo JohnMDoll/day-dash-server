@@ -47,13 +47,13 @@ INSTALLED_APPS = [
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    'https://johnmdoll.github.io/day-dash-client',
+    'https://johnmdoll.github.io',
     'https://starfish-app-7idti.ondigitalocean.app',
     'http://www.mydaydash.com',
     'https://www.mydaydash.com',
     'http://mydaydash.com',
     'https://mydaydash.com',
-    'https://walrus-app-777xe.ondigitalocean.app'
+    'https://walrus-app-777xe.ondigitalocean.app',
 )
 
 REST_FRAMEWORK = {
