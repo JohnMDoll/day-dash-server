@@ -50,7 +50,7 @@ CORS_ORIGIN_WHITELIST = (
     'https://johnmdoll.github.io/day-dash-client',
     'https://starfish-app-7idti.ondigitalocean.app',
     'http://www.mydaydash.com',
-    'https://www.mydaydash.com'
+    'https://www.mydaydash.com',
     'http://mydaydash.com',
     'https://mydaydash.com',
     'https://walrus-app-777xe.ondigitalocean.app'
