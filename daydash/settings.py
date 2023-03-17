@@ -52,7 +52,8 @@ CORS_ORIGIN_WHITELIST = (
     'http://www.mydaydash.com',
     'https://www.mydaydash.com'
     'http://mydaydash.com',
-    'https://mydaydash.com'
+    'https://mydaydash.com',
+    'https://walrus-app-777xe.ondigitalocean.app/'
 )
 
 REST_FRAMEWORK = {
