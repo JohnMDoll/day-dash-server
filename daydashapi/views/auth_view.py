@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from daydashapi.models import DashUser, Tag
+from daydashapi.models import DashUser, Tag, Friendship
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -81,6 +81,11 @@ def register(request):
                 user=new_dash_user,
                 tag='Family'
             )
+        Friendship.objects.create(
+                friender=DashUser.objects.get(user__username='john@mydaydash.com'),
+                friendee=new_dash_user
+            )
+
 
         # Use the REST Framework's token generator on the new user account
         token = Token.objects.create(user=new_user)
