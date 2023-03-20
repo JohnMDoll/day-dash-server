@@ -129,10 +129,11 @@ class EventSerializer(serializers.ModelSerializer):
         # Get the comments associated with the current event
         # TODO: after friendTags implementation, add layer of filtering to return only user's comments or comments made by commenters that share tags with each other and the event
         user = DashUser.objects.get(user=self.context.auth.user)
-        comments = EventComments.objects.filter(Q(event=obj), Q(commenter=user) | Q(event__user=user))
+        comments = EventComments.objects.filter(Q(event=obj))
         serializer = CommentSerializer(comments, many=True, context=self.context)
         return serializer.data
 
     class Meta:
         model = Event
         fields = ( 'id', 'name', 'description', 'location', 'startDateTime', 'endDateTime', 'tags', 'comments')
+        depth = 1

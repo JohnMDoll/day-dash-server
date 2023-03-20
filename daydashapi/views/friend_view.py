@@ -76,7 +76,7 @@ class FriendView(ViewSet):
             friendship = Friendship.objects.get_or_create(
                 friender=DashUser.objects.get(user=request.auth.user),
                 friendee=DashUser.objects.get(
-                    user__email=request.data['email'])
+                    user__username=request.data['email'].lower())
             )
             if friendship[1] == False:
                 return Response({"message": "You already friended this user."}, status=status.HTTP_400_BAD_REQUEST)

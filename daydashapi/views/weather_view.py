@@ -31,6 +31,7 @@ class WeatherView(ViewSet):
             current = {
                 'temp': data['current']['temp_f'],
                 'condition': data['current']['condition']['text'],
+                'icon': data['current']['condition']['icon'],
                 'wind': data['current']['wind_mph'],
                 'humidity': f"{data['current']['humidity']}%",
             }
@@ -39,6 +40,7 @@ class WeatherView(ViewSet):
                 'low': data['forecast']['forecastday'][0]['day']['mintemp_f'],
                 'rain': data['forecast']['forecastday'][0]['day']['daily_chance_of_rain'],
                 'condition': data['forecast']['forecastday'][0]['day']['condition']['text'],
+                'icon': data['forecast']['forecastday'][0]['day']['condition']['icon'],
                 'sunrise': data['forecast']['forecastday'][0]['astro']['sunrise'],
                 'sunset': data['forecast']['forecastday'][0]['astro']['sunset'],
                 'moon': data['forecast']['forecastday'][0]['astro']['moon_phase'],
@@ -48,6 +50,7 @@ class WeatherView(ViewSet):
                 'low': data['forecast']['forecastday'][1]['day']['mintemp_f'],
                 'rain': data['forecast']['forecastday'][1]['day']['daily_chance_of_rain'],
                 'condition': data['forecast']['forecastday'][1]['day']['condition']['text'],
+                'icon': data['forecast']['forecastday'][1]['day']['condition']['icon'],
                 'sunrise': data['forecast']['forecastday'][1]['astro']['sunrise'],
                 'sunset': data['forecast']['forecastday'][1]['astro']['sunset'],
                 'moon': data['forecast']['forecastday'][1]['astro']['moon_phase'],
@@ -84,6 +87,7 @@ class WeatherView(ViewSet):
         current = {
             'temp': data['current']['temp_f'],
             'condition': data['current']['condition']['text'],
+            'icon': data['current']['condition']['icon'],
             'wind': data['current']['wind_mph'],
             'humidity': f"{data['current']['humidity']}%",
         }
@@ -92,6 +96,7 @@ class WeatherView(ViewSet):
             'low': data['forecast']['forecastday'][0]['day']['mintemp_f'],
             'rain': data['forecast']['forecastday'][0]['day']['daily_chance_of_rain'],
             'condition': data['forecast']['forecastday'][0]['day']['condition']['text'],
+            'icon': data['forecast']['forecastday'][0]['day']['condition']['icon'],
             'sunrise': data['forecast']['forecastday'][0]['astro']['sunrise'],
             'sunset': data['forecast']['forecastday'][0]['astro']['sunset'],
             'moon': data['forecast']['forecastday'][0]['astro']['moon_phase'],
@@ -101,6 +106,7 @@ class WeatherView(ViewSet):
             'low': data['forecast']['forecastday'][1]['day']['mintemp_f'],
             'rain': data['forecast']['forecastday'][1]['day']['daily_chance_of_rain'],
             'condition': data['forecast']['forecastday'][1]['day']['condition']['text'],
+            'icon': data['forecast']['forecastday'][1]['day']['condition']['icon'],
             'sunrise': data['forecast']['forecastday'][1]['astro']['sunrise'],
             'sunset': data['forecast']['forecastday'][1]['astro']['sunset'],
             'moon': data['forecast']['forecastday'][1]['astro']['moon_phase'],

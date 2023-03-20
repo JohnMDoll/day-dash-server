@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from daydashapi.models import DashUser
+from daydashapi.models import DashUser, Tag
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -16,7 +16,7 @@ def login(request):
     '''
     # Use the built-in authenticate method to verify
     # authenticate returns the user object or None if no user is found
-    authenticated_user = authenticate(username=request.data['email'], password=request.data['password'])
+    authenticated_user = authenticate(username=request.data['email'].lower(), password=request.data['password'])
 
     # If authentication was successful, respond with their token
     if authenticated_user is not None:
@@ -53,7 +53,7 @@ def register(request):
     except User.DoesNotExist:
 
         new_user = User.objects.create_user(
-            username=request.data['email'],
+            username=request.data['email'].lower(),
             password=request.data['password'],
             email=request.data['email'],
             first_name=request.data['firstName'],
@@ -64,6 +64,23 @@ def register(request):
             zipcode=request.data['zipcode'],
             user=new_user
         )
+
+        Tag.objects.create(
+                user=new_dash_user,
+                tag='Friends'
+            )
+        Tag.objects.create(
+                user=new_dash_user,
+                tag='Work'
+            )
+        Tag.objects.create(
+                user=new_dash_user,
+                tag='Fun'
+            )
+        Tag.objects.create(
+                user=new_dash_user,
+                tag='Family'
+            )
 
         # Use the REST Framework's token generator on the new user account
         token = Token.objects.create(user=new_user)
